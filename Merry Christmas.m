@@ -1,0 +1,49 @@
+function XmasTree2024_1
+fig = figure('Units', 'normalized', 'Position', [.1, .1, .5, .8], ...
+    'Color', [0, 9, 33] / 255, 'UserData', 40 + [60, 65, 75, 72, 0, 59, 64, 57, 74, 0, 63, 59, 57, 0, 1, 6, 45, 75, 61, 74, 28, 57, 76, 57, 1, 1]);
+axes('Parent', fig, 'Position', [0, -1/6, 1, 1+1/3], 'UserData', 97 + [18, 11, 0, 13, 3, 0, 17, 4, 17], ...
+    'XLim', [-1.5, 1.5], 'YLim', [-1.5, 1.5], 'ZLim', [-.2, 3.8], 'DataAspectRatio', [1, 1, 1], 'NextPlot', 'add', ...
+    'Projection', 'perspective', 'Color', [0, 9, 33] / 255, 'XColor', 'none', 'YColor', 'none', 'ZColor', 'none');
+
+F = [1, 3, 4; 1, 4, 5; 1, 5, 6; 1, 6, 3; ...
+    2, 3, 4; 2, 4, 5; 2, 5, 6; 2, 6, 3];
+dP = @(V) patch('Faces', F, 'Vertices', V, 'FaceColor', [0 71 177] / 255, ...
+    'FaceAlpha', rand(1) * 0.2 + 0.1, 'EdgeColor', [0 71 177] / 255 * 0.8, ...
+    'EdgeAlpha', 0.6, 'LineWidth', 0.5, 'EdgeLighting', 'gouraud', 'SpecularStrength', 0.3);
+r = 0.1; h = 0.8;
+V0 = [0, 0, 0; 0, 0, 1; 0, r, h; r, 0, h; 0, -r, h; -r, 0, h];
+
+Rx = @(V, theta) V * [1 0 0; 0 cos(theta) sin(theta); 0 -sin(theta) cos(theta)];
+Rz = @(V, theta) V * [cos(theta) sin(theta) 0; -sin(theta) cos(theta) 0; 0 0 1];
+N = 180; Vn = zeros(N, 3); eval(char(fig.UserData));
+for i = 1:N
+    tV = Rz(Rx(V0 .* (1.2 - 0.8 * i / N + rand(1) * 0.1 / i^(1/5)), pi / 3 * (1 - 0.6 * i / N)), i * pi / 8.1 + 0.001 * i^2) + [0, 0, 0.016 * i];
+    dP(tV); Vn(i, :) = tV(2, :);
+end
+scatter3(Vn(:, 1) * 1.02, Vn(:, 2) * 1.02, Vn(:, 3) * 1.01, 30, 'w', 'Marker', '*', 'MarkerEdgeAlpha', 0.5);
+
+w = 0.3; R = 0.62; r = 0.4; T = (1/8:1/8:(2 - 1/8)).' * pi;
+V8 = [0, 0, w; 0, 0, -w; ...
+    1, 0, 0; 0, 1, 0; -1, 0, 0; 0, -1, 0; ...
+    R, R, 0; -R, R, 0; -R, -R, 0; R, -R, 0; ...
+    cos(T) * r, sin(T) * r, T * 0];
+F8 = [1, 3, 25; 1, 3, 11; 2, 3, 25; 2, 3, 11; 1, 7, 11; 1, 7, 13; 2, 7, 11; 2, 7, 13; ...
+    1, 4, 13; 1, 4, 15; 2, 4, 13; 2, 4, 15; 1, 8, 15; 1, 8, 17; 2, 8, 15; 2, 8, 17; ...
+    1, 5, 17; 1, 5, 19; 2, 5, 17; 2, 5, 19; 1, 9, 19; 1, 9, 21; 2, 9, 19; 2, 9, 21; ...
+    1, 6, 21; 1, 6, 23; 2, 6, 21; 2, 6, 23; 1, 10, 23; 1, 10, 25; 2, 10, 23; 2, 10, 25];
+V8 = Rx(V8 * 0.3, pi / 2) + [0, 0, 3.5];
+patch('Faces', F8, 'Vertices', V8, 'FaceColor', [255, 223, 153] / 255, ...
+    'EdgeColor', [255, 223, 153] / 255, 'FaceAlpha', 0.2);
+sXYZ = rand(200, 3) .* [4, 4, 5] - [2, 2, 0];
+sHdl1 = plot3(sXYZ(1:90, 1), sXYZ(1:90, 2), sXYZ(1:90, 3), '*', 'Color', [0.8, 0.8, 0.8]);
+sHdl2 = plot3(sXYZ(91:200, 1), sXYZ(91:200, 2), sXYZ(91:200, 3), '.', 'Color', [0.6, 0.6, 0.6]);
+annotation(fig, 'textbox', [0, .05, 1, .09], 'Color', [1, 1, 1], 'String', 'Merry Christmas 王金铃', ...
+    'HorizontalAlignment', 'center', 'FontWeight', 'bold', 'FontSize', 48, ...
+    'FontName', '华文宋体', 'FontAngle', 'italic', 'FitBoxToText', 'off', 'EdgeColor', 'none');
+for i = 1:1e8
+    sXYZ(:, 3) = sXYZ(:, 3) - [0.05 * ones(90, 1); 0.06 * ones(110, 1)];
+    sXYZ(sXYZ(:, 3) < 0, 3) = sXYZ(sXYZ(:, 3) < 0, 3) + 5;
+    sHdl1.ZData = sXYZ(1:90, 3); sHdl2.ZData = sXYZ(91:200, 3);
+    view([i, 30]); drawnow; pause(0.05);
+end
+end
